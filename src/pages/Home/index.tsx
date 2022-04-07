@@ -3,10 +3,11 @@ import { ProductList } from './styles';
 import { api } from '../../services/api';
 import { useCart } from '../../hooks/useCart';
 import { ProductFormatted } from '../../types/Product';
-import { Product } from '../../components/Product';
+import { Product as TagProduct } from '../../components/Product';
+import { Product } from '../../types/Product';
 import { formatPrice } from '../../util/format';
 
-interface CartItemsAmount {
+export interface CartItemsAmount {
   [key: number]: number;
 }
 
@@ -19,33 +20,24 @@ const Home = (): JSX.Element => {
   const [products, setProducts] = useState<ProductFormatted[]>([]);
   const { addProduct, cart } = useCart();
 
-  // const cartItemsAmount = cart.reduce((sumAmount, product) => {
-  //   // TODO
-  // }, {} as CartItemsAmount)
-
-
+  const cartItemsAmount = cart.reduce((sumAmount, product) => {
+    const newSumAmount = { ...sumAmount };
+    newSumAmount[product.id] = product.amount;
+    return newSumAmount;
+  }, {} as CartItemsAmount)
 
   const loadProducts = async () => {
 
-    const storagedCart = localStorage.getItem('@RocketShoes:cart');
-    if (storagedCart) {
-      const productsJSON = JSON.parse(storagedCart) as sampleProps;
-      const formattedProducts = productsJSON.products.map(item => ({ ...item, priceFormatted: formatPrice(item.price) }));
-      setProducts(formattedProducts);
-      return;
-    }
+    const response = await api.get<Product[]>('products');
 
-    const products = await api('products');
-    const stock = await api('stock');
+    const data = response.data.map(product => ({
+      ...product,
+      priceFormatted: formatPrice(product.price)
+    }));
 
-    const cartData = {
-      products: products.data,
-      stock: stock.data
-    };
-
-    localStorage.setItem('@RocketShoes:cart', JSON.stringify(cartData));
-
+    setProducts(data);
   }
+
   useEffect(() => {
     loadProducts();
   }, []);
@@ -56,7 +48,7 @@ const Home = (): JSX.Element => {
 
   return (
     <ProductList>
-      {products.map(item => (<Product product={item} handleAddProduct={handleAddProduct}></Product>))}
+      {products.map(product => (<TagProduct key={product.id} product={product} handleAddProduct={handleAddProduct} cartItemsAmount={cartItemsAmount}></TagProduct>))}
     </ProductList>
   );
 };

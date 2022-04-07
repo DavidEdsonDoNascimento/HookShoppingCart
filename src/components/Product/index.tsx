@@ -1,12 +1,14 @@
 import { MdAddShoppingCart } from "react-icons/md"
+import { CartItemsAmount } from "../../pages/Home";
 import { ProductFormatted } from "../../types/Product"
 
 type productProps = {
     product: ProductFormatted;
+    cartItemsAmount: CartItemsAmount;
     handleAddProduct: (id: number) => void;
 }
 
-export const Product = ({ product, handleAddProduct }: productProps) => {
+export const Product = ({ product, cartItemsAmount, handleAddProduct }: productProps) => {
     return (
         <li>
             <img src={product.image || ''} />
@@ -19,7 +21,7 @@ export const Product = ({ product, handleAddProduct }: productProps) => {
             >
                 <div data-testid="cart-product-quantity">
                     <MdAddShoppingCart size={16} color="#FFF" />
-                    {/* {cartItemsAmount[product.id] || 0} */} {product.id ? 1 : 0}
+                    {cartItemsAmount[product.id] || 0}
                 </div>
 
                 <span>ADICIONAR AO CARRINHO</span>
