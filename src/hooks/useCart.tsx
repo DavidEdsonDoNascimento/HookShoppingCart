@@ -1,13 +1,11 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { api } from '../services/api';
 import { toast } from 'react-toastify';
-import { Product, Stock } from '../types';
-
+import { Product } from '../types';
 interface CartProviderProps {
   children: ReactNode;
 }
-
-interface UpdateProductAmount {
+export interface UpdateProductAmount {
   productId: number;
   amount: number;
 }
@@ -129,7 +127,5 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 }
 
 export function useCart(): CartContextData {
-  const context = useContext(CartContext);
-
-  return context;
+  return useContext(CartContext);
 }
